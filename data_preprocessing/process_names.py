@@ -47,7 +47,7 @@ def append_honorifics(train):
     train['title'] = 0
     try:
         columns_to_use = pd.read_csv('files/honorifics_used.csv')
-        print('found file')
+        print('Found honorifics file')
         columns_to_use = list(columns_to_use.columns)
         for cols in columns_to_use:
             train[cols] = 0

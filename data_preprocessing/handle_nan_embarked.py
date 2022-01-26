@@ -7,6 +7,6 @@ def handle_nan_embarked(train):
             pclass = row['Pclass']
             sex = row['Sex']
             embarked = train[train['Pclass'] == pclass][train['Sex'] == sex].Embarked.mode()[0]  
-            print(embarked) 
+            print('Found nan for embarked. Most common embarkation point for passenger with sex ',sex, 'and pclass ', pclass, 'is ',embarked) 
             train.loc[index, 'Embarked'] = embarked
     return train     
