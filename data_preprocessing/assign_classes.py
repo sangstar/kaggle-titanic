@@ -6,6 +6,10 @@ def assign_classes(train):
     train['Class'] = 0
     for index, row in train.iterrows():
         fare = row['Fare']
+        if np.isnan(fare):
+            pclass = row['Pclass']
+            sex = row['Sex']
+            fare = np.nanmedian(train[train['Pclass'] == pclass][train['Sex'] == sex]['Fare'])
         percentile = percentileofscore(train['Fare'], fare)
         #print('Fare of ',fare,'has a percentile score of ', percentile)
         if percentile <= 25:

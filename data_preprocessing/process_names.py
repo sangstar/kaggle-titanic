@@ -2,6 +2,7 @@ import re
 import numpy as np
 import pandas as pd
 from scipy.stats import normaltest
+import csv
 
 alpha = 1e-3
 
@@ -44,11 +45,31 @@ def append_honorifics(train):
     #check_for_missing_honorifics(cleaned_names, honorifics)
     honorifics = list(pd.read_csv('files/honorifics.csv').columns)
     train['title'] = 0
-    for index, name in zip(train.index, cleaned_names):
-        for words in name.split(" "):
-            if words in honorifics:
-                train.loc[index, words] = 1
-                train.loc[index, 'title'] = words
+    try:
+        columns_to_use = pd.read_csv('files/honorifics_used.csv')
+        print('found file')
+        columns_to_use = list(columns_to_use.columns)
+        for cols in columns_to_use:
+            train[cols] = 0
+        for index, name in zip(train.index, cleaned_names):
+            for words in name.split(" "):
+                if words in columns_to_use:
+                    train.loc[index, words] = 1
+                    train.loc[index, 'title'] = words
+    except FileNotFoundError:
+        print('Need to make new honorifics file...')
+        honorifics_used = []
+        for index, name in zip(train.index, cleaned_names):
+            for words in name.split(" "):
+                if words in honorifics:
+                    train.loc[index, words] = 1
+                    train.loc[index, 'title'] = words
+                    honorifics_used.append(words)
+        honorifics_used = list(set(honorifics_used))
+        with open('files/honorifics_used.csv', 'w', newline='') as myfile:
+            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+            wr.writerow(honorifics_used)
+
     missed = check_for_missing_honorifics(cleaned_names, honorifics)
     train = fix_missed_honorifics(train, missed, cleaned_names)
     return train
