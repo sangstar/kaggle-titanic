@@ -1,6 +1,9 @@
 import re
 import numpy as np
 import pandas as pd
+from scipy.stats import normaltest
+
+alpha = 1e-3
 
 
 def clean_names(dat):
@@ -20,13 +23,17 @@ def check_for_missing_honorifics(cleaned_names, honorifics):
             misseds.append(cleaned_names.index(names))
     return misseds
         
-def fix_missed_honorifics(train, missed):
+def fix_missed_honorifics(train, missed,cleaned_names):
     for vals in missed:
         to_scan = train.iloc[vals]
         sex = to_scan['Sex']
         pclass = to_scan['Pclass']
-        subset = train[train['Sex'] == sex][train['Pclass'] == pclass]
-        print(subset)
+        wealth_group = to_scan['Class']
+        most_common_title = train[train['Sex'] == sex][train['Pclass'] == pclass][train['Class'] == wealth_group].title.mode()[0]
+        print('Giving name ', cleaned_names[vals], 'title of ', most_common_title)
+        train.loc[missed, 'title'] = most_common_title
+    train = train.fillna(0)
+    return train
 
 
 
@@ -43,6 +50,6 @@ def append_honorifics(train):
                 train.loc[index, words] = 1
                 train.loc[index, 'title'] = words
     missed = check_for_missing_honorifics(cleaned_names, honorifics)
-    fix_missed_honorifics(train, missed)
-    return train, missed
+    train = fix_missed_honorifics(train, missed, cleaned_names)
+    return train
 
