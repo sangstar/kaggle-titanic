@@ -13,9 +13,9 @@ def fill_in_nan_ages(train):
             title = row['title']
             subset_test = train[train['Pclass'] == pclass][train['Sex']==sex][train['title'] == title]['Age']
             #string = 'Hist for ',sex, 'with title ',title, 'and pclass ',pclass
-            if np.random.choice(range(0,15)) == 5: # Will randomly show a graph of each population to choose the mean/median from
-                subset_test.plot.hist(title = 'Hist for '+sex+' with title '+title+ ' and pclass '+str(pclass))
-                plt.show()
+            #if np.random.choice(range(0,15)) == 5: # Will randomly show a graph of each population to choose the mean/median from
+            #    subset_test.plot.hist(title = 'Hist for '+sex+' with title '+title+ ' and pclass '+str(pclass))
+            #    plt.show()
             if len(subset_test) >= 8: # normaltest requires at least 8 samples
                 results = normaltest(subset_test, nan_policy = 'omit')
                 if results[1] > alpha: #null hypothesis cannot be rejected that distribution is normal. Take mean of gaussian
